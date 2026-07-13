@@ -28,16 +28,27 @@ let lastSyncTime = null
  * 上传单条记录到云端
  */
 export const uploadRecord = async (storeName, record) => {
-  if (!isSupabaseConfigured()) return null
+  if (!isSupabaseConfigured()) {
+    console.warn(`[Sync] Supabase 未配置，跳过上传: ${storeName}/${record?.id}`)
+    return null
+  }
   
   const supabase = getSupabase()
   const user = getCurrentUser()
-  if (!user || !record) return null
+  if (!user || !record) {
+    console.warn(`[Sync] 用户未登录或记录为空，跳过上传: ${storeName}/${record?.id}`)
+    return null
+  }
 
   const tableName = STORE_TABLE_MAP[storeName]
-  if (!tableName) return null
+  if (!tableName) {
+    console.error(`[Sync] 找不到表映射: storeName=${storeName}`)
+    return null
+  }
 
   try {
+    console.log(`[Sync] 开始上传: ${storeName}/${record.id} -> ${tableName}`)
+    
     // 检查云端是否已存在该记录
     const { data: existing } = await supabase
       .from(tableName)
@@ -47,12 +58,14 @@ export const uploadRecord = async (storeName, record) => {
       .maybeSingle()
 
     if (existing) {
+      console.log(`[Sync] 记录已存在，比较时间戳...`)
       // 比较 updatedAt，保留最新的
       const cloudTime = existing.updated_at ? new Date(existing.updated_at).getTime() : 0
       const localTime = record.updatedAt ? new Date(record.updatedAt).getTime() : 0
       
       if (localTime >= cloudTime) {
         // 本地更新，覆盖云端
+        console.log(`[Sync] 本地更新，覆盖云端记录`)
         const { data, error } = await supabase
           .from(tableName)
           .update({
@@ -65,11 +78,14 @@ export const uploadRecord = async (storeName, record) => {
           .single()
 
         if (error) throw error
+        console.log(`[Sync] ✅ 更新成功: ${tableName}/${existing.id}`)
         return data
       }
+      console.log(`[Sync] 云端更新，跳过上传`)
       return existing
     } else {
       // 新建云端记录
+      console.log(`[Sync] 新建云端记录...`)
       const { data, error } = await supabase
         .from(tableName)
         .insert({
@@ -83,10 +99,11 @@ export const uploadRecord = async (storeName, record) => {
         .single()
 
       if (error) throw error
+      console.log(`[Sync] ✅ 插入成功: ${tableName}/${data.id}`)
       return data
     }
   } catch (e) {
-    console.error(`[Sync] 上传失败 ${storeName}/${record.id}:`, e)
+    console.error(`[Sync] ❌ 上传失败 ${storeName}/${record.id}:`, e.message || e)
     syncQueue.push({ action: 'upload', storeName, record, retries: 0 })
     return null
   }

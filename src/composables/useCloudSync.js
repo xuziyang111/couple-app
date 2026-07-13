@@ -135,16 +135,30 @@ export function useCloudSync() {
    * 在本地数据变更后调用（异步，不阻塞UI）
    */
   const pushData = async (storeName, record) => {
-    if (!isOnline.value || !coupleId.value) return
+    console.log(`[CloudSync] pushData 被调用: store=${storeName}, record.id=${record?.id}, isOnline=${isOnline.value}, coupleId=${coupleId.value}`)
+    
+    if (!isOnline.value) {
+      console.warn(`[CloudSync] ⚠️ pushData 跳过: 未连接云端`)
+      return
+    }
+    
+    if (!coupleId.value) {
+      console.warn(`[CloudSync] ⚠️ pushData 跳过: coupleId 为空`)
+      return
+    }
     
     // 确保记录有 coupleId
     if (!record.coupleId) {
       record.coupleId = coupleId.value
+      console.log(`[CloudSync] 为记录添加 coupleId: ${coupleId.value}`)
     }
     
     // 异步上传，不阻塞
-    sync.uploadRecord(storeName, record).then(() => {
+    sync.uploadRecord(storeName, record).then((result) => {
+      console.log(`[CloudSync] ✅ 上传成功: ${storeName}/${record.id}`, result ? '有返回' : '无返回')
       pendingCount.value = sync.getSyncStatus().queueLength
+    }).catch(err => {
+      console.error(`[CloudSync] ❌ 上传失败: ${storeName}/${record.id}`, err.message || err)
     })
   }
 
