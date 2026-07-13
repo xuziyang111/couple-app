@@ -1,6 +1,6 @@
 [build]
-  publish = "dist/build/web"
-  command = "echo 'Already built'"
+  publish = "unpackage/dist/build/h5"
+  command = "npm install && npm run build:h5"
 
 [[redirects]]
   from = "/*"
