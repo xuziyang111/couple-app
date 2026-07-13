@@ -13,7 +13,7 @@ import { createClient } from '@supabase/supabase-js'
 
 // ============ 请填入你的 Supabase 配置 ============
 const SUPABASE_URL = 'https://ggkncfyyyyheisatfjsz.supabase.co'
-const SUPABASE_ANON_KEY = 'sb_publishable_SmOpB3F_plabOXGMsdGCxw_HW1DCsYi'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdna25jZnl5eXloZWlzYXRmanN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3NDg3NzksImV4cCI6MjA5OTMyNDc3OX0.BdQr61xfkc0PQsG31b99zHPGGV32qR3mvYvttdd97WI'
 // ====================================================
 
 let supabase = null

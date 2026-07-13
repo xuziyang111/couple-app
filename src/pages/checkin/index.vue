@@ -51,43 +51,78 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useCheckinStore } from '../../stores/checkin'
 import { generateId } from '../../utils/id'
+import { createRecord } from '../../db'
 import EmptyState from '../../components/common/EmptyState.vue'
 import GradientButton from '../../components/common/GradientButton.vue'
+import { useCloudSync } from '../../composables/useCloudSync'
 
 const checkinStore = useCheckinStore()
+const cloudSync = useCloudSync()
 const statusBarHeight = ref(44)
 const showAddWish = ref(false)
 const newWish = ref({ title: '', description: '', category: '' })
 const wishes = computed(() => checkinStore.wishes)
 const todayChecked = ref(false)
 
-const doCheckin = () => {
+const doCheckin = async () => {
   if (todayChecked.value) return
   const today = new Date().toISOString().split('T')[0]
+  const record = { id: generateId(), date: today, createdAt: new Date().toISOString() }
   checkinStore.updateStreak(today)
-  checkinStore.addCheckinRecord({ id: generateId(), date: today, createdAt: new Date().toISOString() })
+  checkinStore.addCheckinRecord(record)
+  await createRecord('checkins', record)
+  cloudSync.pushData('checkins', record)
   todayChecked.value = true
   uni.showToast({ title: '打卡成功！', icon: 'success' })
 }
 
-const toggleWish = (wish) => {
-  checkinStore.updateWish(wish.id, { completed: !wish.completed, completedAt: !wish.completed ? new Date().toISOString() : null })
+const toggleWish = async (wish) => {
+  const updated = { ...wish, completed: !wish.completed, completedAt: !wish.completed ? new Date().toISOString() : null }
+  checkinStore.updateWish(wish.id, updated)
+  await createRecord('wishes', updated)
+  cloudSync.pushData('wishes', updated)
 }
 
-const addWish = () => {
+const addWish = async () => {
   if (!newWish.value.title.trim()) return
-  checkinStore.addWish({ id: generateId(), title: newWish.value.title, description: newWish.value.description, category: newWish.value.category, completed: false, createdAt: new Date().toISOString() })
+  const wish = { id: generateId(), title: newWish.value.title, description: newWish.value.description, category: newWish.value.category, completed: false, createdAt: new Date().toISOString() }
+  checkinStore.addWish(wish)
+  await createRecord('wishes', wish)
+  cloudSync.pushData('wishes', wish)
   newWish.value = { title: '', description: '', category: '' }
   showAddWish.value = false
+}
+
+// 实时监听回调
+const handleIncomingWish = (record, event) => {
+  if (event === 'delete' || record._deleted) {
+    checkinStore.wishes = checkinStore.wishes.filter(w => w.id !== record.id)
+    return
+  }
+  const exists = checkinStore.wishes.some(w => w.id === record.id)
+  if (exists) {
+    checkinStore.wishes = checkinStore.wishes.map(w => w.id === record.id ? record : w)
+  } else {
+    checkinStore.wishes.push(record)
+  }
 }
 
 onMounted(() => {
   const sysInfo = uni.getSystemInfoSync()
   statusBarHeight.value = sysInfo.statusBarHeight || 44
   todayChecked.value = checkinStore.lastCheckinDate === new Date().toISOString().split('T')[0]
+  
+  // 注册实时监听
+  if (cloudSync.isOnline && cloudSync.coupleId) {
+    cloudSync.registerCallback('wishes', handleIncomingWish)
+  }
+})
+
+onUnmounted(() => {
+  cloudSync.unregisterCallback('wishes')
 })
 </script>
 

@@ -110,7 +110,7 @@ const getBubbleClass = (msg) => {
   return msg.senderId === myUserId.value ? 'is-me' : 'is-partner'
 }
 
-const sendText = () => {
+const sendText = async () => {
   if (!inputText.value.trim()) return
   const msg = {
     id: generateId(),
@@ -122,16 +122,21 @@ const sendText = () => {
     isRead: false,
     coupleId: coupleStore.coupleInfo?.id || null
   }
-  chatStore.addMessage(msg)
-  createRecord('messages', msg)
-  
-  // 推送到云端（触发实时同步）
-  if (cloudSync.isOnline && cloudSync.coupleId) {
-    cloudSync.pushData('messages', msg)
+  try {
+    chatStore.addMessage(msg)
+    await createRecord('messages', msg)
+    
+    // 推送到云端（触发实时同步）
+    if (cloudSync.isOnline && cloudSync.coupleId) {
+      cloudSync.pushData('messages', msg)
+    }
+    
+    inputText.value = ''
+    scrollToBottom()
+  } catch (e) {
+    console.error('[Chat] 发送消息失败:', e)
+    uni.showToast({ title: '发送失败，请重试', icon: 'none' })
   }
-  
-  inputText.value = ''
-  scrollToBottom()
 }
 
 const chooseImage = async () => {
@@ -157,7 +162,7 @@ const chooseImage = async () => {
       coupleId: coupleStore.coupleInfo?.id || null
     }
     chatStore.addMessage(msg)
-    createRecord('messages', msg)
+    await createRecord('messages', msg)
     
     // 推送到云端（触发实时同步）
     if (cloudSync.isOnline && cloudSync.coupleId) {
@@ -166,7 +171,12 @@ const chooseImage = async () => {
     
     scrollToBottom()
   } catch (e) {
-    console.log('选择图片取消')
+    if (e.errMsg && e.errMsg.includes('cancel')) {
+      console.log('选择图片取消')
+    } else {
+      console.error('[Chat] 发送图片失败:', e)
+      uni.showToast({ title: '发送失败，请重试', icon: 'none' })
+    }
   }
 }
 

@@ -47,16 +47,19 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useCoupleStore } from '../../stores/couple'
 import { useAnniversaryStore } from '../../stores/anniversary'
 import { useDateCalc } from '../../composables/useDateCalc'
 import { generateId } from '../../utils/id'
+import { createRecord } from '../../db'
 import EmptyState from '../../components/common/EmptyState.vue'
 import GradientButton from '../../components/common/GradientButton.vue'
+import { useCloudSync } from '../../composables/useCloudSync'
 
 const coupleStore = useCoupleStore()
 const anniversaryStore = useAnniversaryStore()
+const cloudSync = useCloudSync()
 const { loveDays, calcLoveDays, calcCountdown } = useDateCalc()
 const statusBarHeight = ref(44)
 const showAdd = ref(false)
@@ -65,17 +68,43 @@ const anniversaries = computed(() => anniversaryStore.sortedAnniversaries)
 
 const getCountdown = (date) => calcCountdown(date)
 const onDateChange = (e) => { newItem.value.date = e.detail.value }
-const addAnniversary = () => {
+const addAnniversary = async () => {
   if (!newItem.value.title.trim() || !newItem.value.date) return
-  anniversaryStore.addAnniversary({ id: generateId(), ...newItem.value, createdAt: new Date().toISOString() })
+  const item = { id: generateId(), ...newItem.value, createdAt: new Date().toISOString() }
+  anniversaryStore.addAnniversary(item)
+  await createRecord('anniversaries', item)
+  cloudSync.pushData('anniversaries', item)
   newItem.value = { title: '', date: '', note: '', icon: '📅' }
   showAdd.value = false
+}
+
+// 实时监听回调
+const handleIncomingAnniversary = (record, event) => {
+  if (event === 'delete' || record._deleted) {
+    anniversaryStore.anniversaries = anniversaryStore.anniversaries.filter(a => a.id !== record.id)
+    return
+  }
+  const exists = anniversaryStore.anniversaries.some(a => a.id === record.id)
+  if (exists) {
+    anniversaryStore.anniversaries = anniversaryStore.anniversaries.map(a => a.id === record.id ? record : a)
+  } else {
+    anniversaryStore.anniversaries.push(record)
+  }
 }
 
 onMounted(() => {
   const sysInfo = uni.getSystemInfoSync()
   statusBarHeight.value = sysInfo.statusBarHeight || 44
   loveDays.value = calcLoveDays(coupleStore.loveStartDate)
+  
+  // 注册实时监听
+  if (cloudSync.isOnline && cloudSync.coupleId) {
+    cloudSync.registerCallback('anniversaries', handleIncomingAnniversary)
+  }
+})
+
+onUnmounted(() => {
+  cloudSync.unregisterCallback('anniversaries')
 })
 </script>
 

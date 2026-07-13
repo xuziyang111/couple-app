@@ -31,9 +31,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { getAllRecords, addRecord } from '../../db'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { getAllRecords, createRecord } from '../../db'
+import { useCloudSync } from '../../composables/useCloudSync'
 import EmptyState from '../../components/common/EmptyState.vue'
+
+const cloudSync = useCloudSync()
 
 const statusBarHeight = ref(44)
 const photos = ref([])
@@ -100,7 +103,10 @@ const chooseAndUploadPhoto = async () => {
       }
 
       // 保存到数据库
-      await addRecord('photos', photo)
+      await createRecord('photos', photo)
+      
+      // 推送到云端
+      cloudSync.pushData('photos', photo)
       
       // 更新本地列表
       photos.value.unshift(photo)
@@ -115,12 +121,33 @@ const chooseAndUploadPhoto = async () => {
   }
 }
 
+// 实时监听回调
+const handleIncomingPhoto = (record, event) => {
+  if (event === 'delete' || record._deleted) {
+    photos.value = photos.value.filter(p => p.id !== record.id)
+    return
+  }
+  const exists = photos.value.some(p => p.id === record.id)
+  if (!exists) {
+    photos.value.unshift(record)
+  }
+}
+
 onMounted(async () => {
   const sysInfo = uni.getSystemInfoSync()
   statusBarHeight.value = sysInfo.statusBarHeight || 44
   const records = await getAllRecords('photos')
   records.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
   photos.value = records
+  
+  // 注册实时监听
+  if (cloudSync.isOnline && cloudSync.coupleId) {
+    cloudSync.registerCallback('photos', handleIncomingPhoto)
+  }
+})
+
+onUnmounted(() => {
+  cloudSync.unregisterCallback('photos')
 })
 </script>
 

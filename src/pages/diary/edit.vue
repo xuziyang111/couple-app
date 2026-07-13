@@ -51,9 +51,11 @@ import { generateId } from '../../utils/id'
 import { createRecord } from '../../db'
 import { useDiaryStore } from '../../stores/diary'
 import { useImageCompress } from '../../composables/useImageCompress'
+import { useCloudSync } from '../../composables/useCloudSync'
 import GradientButton from '../../components/common/GradientButton.vue'
 
 const diaryStore = useDiaryStore()
+const cloudSync = useCloudSync()
 const { compressImage } = useImageCompress()
 
 const title = ref('')
@@ -106,6 +108,10 @@ const publish = async () => {
   await createRecord('diaries', diary)
   diaryStore.addDiaryToList(diary)
   diaryStore.clearDraft()
+  
+  // 推送到云端
+  cloudSync.pushData('diaries', diary)
+  
   uni.showToast({ title: '发布成功', icon: 'success' })
   setTimeout(() => uni.navigateBack(), 1500)
 }

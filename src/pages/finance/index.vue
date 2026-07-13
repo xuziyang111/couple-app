@@ -49,14 +49,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useFinanceStore } from '../../stores/finance'
 import { generateId } from '../../utils/id'
 import { createRecord, getAllRecords } from '../../db'
 import EmptyState from '../../components/common/EmptyState.vue'
 import GradientButton from '../../components/common/GradientButton.vue'
+import { useCloudSync } from '../../composables/useCloudSync'
 
 const financeStore = useFinanceStore()
+const cloudSync = useCloudSync()
 const statusBarHeight = ref(44)
 const showAdd = ref(false)
 const records = ref([])
@@ -79,15 +81,39 @@ const addRecord = async () => {
   const record = { id: generateId(), amount: parseFloat(newRecord.value.amount), category: newRecord.value.category, categoryIcon: newRecord.value.categoryIcon, note: newRecord.value.note, payer: newRecord.value.payer, date: newRecord.value.date, createdAt: new Date().toISOString() }
   await createRecord('finances', record)
   records.value.unshift(record)
+  cloudSync.pushData('finances', record)
   newRecord.value = { amount: '', category: '约会', categoryIcon: '💑', note: '', payer: '', date: new Date().toISOString().split('T')[0] }
   showAdd.value = false
 }
+// 实时监听回调
+const handleIncomingFinance = (record, event) => {
+  if (event === 'delete' || record._deleted) {
+    records.value = records.value.filter(r => r.id !== record.id)
+    return
+  }
+  const exists = records.value.some(r => r.id === record.id)
+  if (exists) {
+    records.value = records.value.map(r => r.id === record.id ? record : r)
+  } else {
+    records.value.unshift(record)
+  }
+}
+
 onMounted(async () => {
   const sysInfo = uni.getSystemInfoSync()
   statusBarHeight.value = sysInfo.statusBarHeight || 44
   const data = await getAllRecords('finances')
   data.sort((a, b) => new Date(b.date) - new Date(a.date))
   records.value = data
+  
+  // 注册实时监听
+  if (cloudSync.isOnline && cloudSync.coupleId) {
+    cloudSync.registerCallback('finances', handleIncomingFinance)
+  }
+})
+
+onUnmounted(() => {
+  cloudSync.unregisterCallback('finances')
 })
 </script>
 

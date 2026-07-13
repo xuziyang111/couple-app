@@ -51,13 +51,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useDiaryStore } from '../../stores/diary'
 import { moods } from '../../data/moods'
 import EmptyState from '../../components/common/EmptyState.vue'
 import { getAllRecords } from '../../db'
+import { useCloudSync } from '../../composables/useCloudSync'
 
 const diaryStore = useDiaryStore()
+const cloudSync = useCloudSync()
 const statusBarHeight = ref(44)
 const filterMood = ref('')
 const diaryList = ref([])
@@ -95,12 +97,35 @@ const loadMore = async () => {
   console.log('[Diary] 加载更多日记')
 }
 
+// 实时监听回调
+const handleIncomingDiary = (record, event) => {
+  if (event === 'delete' || record._deleted) {
+    diaryList.value = diaryList.value.filter(d => d.id !== record.id)
+    return
+  }
+  const exists = diaryList.value.some(d => d.id === record.id)
+  if (exists) {
+    diaryList.value = diaryList.value.map(d => d.id === record.id ? record : d)
+  } else {
+    diaryList.value.unshift(record)
+  }
+}
+
 onMounted(async () => {
   const sysInfo = uni.getSystemInfoSync()
   statusBarHeight.value = sysInfo.statusBarHeight || 44
   const records = await getAllRecords('diaries')
   records.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
   diaryList.value = records
+  
+  // 注册实时监听
+  if (cloudSync.isOnline && cloudSync.coupleId) {
+    cloudSync.registerCallback('diaries', handleIncomingDiary)
+  }
+})
+
+onUnmounted(() => {
+  cloudSync.unregisterCallback('diaries')
 })
 </script>
 
