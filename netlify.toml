@@ -1,6 +1,10 @@
 [build]
   publish = "dist/build/web"
   command = "echo 'Skip build - using HBuilderX output'"
+  ignore = "git diff --quiet HEAD^ HEAD . || true"
+  
+[build.environment]
+  NETLIFY_USE_NPM = "false"
 
 [[redirects]]
   from = "/*"
