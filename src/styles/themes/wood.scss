@@ -1,0 +1,52 @@
+// 清新日系原木风 - Wood Theme
+// 自然木质、素雅、清爽
+@mixin wood-theme {
+  --color-primary: #7BA17D;
+  --color-primary-light: #96B898;
+  --color-primary-dark: #5E8760;
+  --color-secondary: #B8D4B9;
+  --color-bg: #F5F0E8;
+  --color-bg-secondary: #EDE6DA;
+  --color-card: #FFFDF8;
+  --color-text: #3E4A3C;
+  --color-text-secondary: #7A8578;
+  --color-text-light: #B0BAA8;
+  --color-text-placeholder: #CDD5C8;
+  --color-accent: #5E8760;
+  --color-success: #7BA17D;
+  --color-warning: #D4B87A;
+  --color-error: #C97B7B;
+  --color-info: #7B9EC9;
+  --color-gradient-start: #7BA17D;
+  --color-gradient-end: #96B898;
+  --color-border: #DDD8CC;
+  --color-divider: #EDE6DA;
+  --color-mask: rgba(62, 74, 60, 0.45);
+  --color-tabbar: #FFFDF8;
+  --color-tabbar-active: #7BA17D;
+  --color-tabbar-inactive: #B0BAA8;
+  --shadow-card: 0 2rpx 12rpx rgba(62, 74, 60, 0.08);
+  --shadow-button: 0 3rpx 10rpx rgba(123, 161, 125, 0.2);
+  --shadow-float: 0 6rpx 24rpx rgba(123, 161, 125, 0.12);
+  --radius-card: 12rpx;
+  --radius-button: 24rpx;
+  --radius-input: 10rpx;
+  --radius-tag: 12rpx;
+  --radius-avatar: 50%;
+  --radius-image: 10rpx;
+  --font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Microsoft YaHei', sans-serif;
+  --font-size-xs: 20rpx;
+  --font-size-sm: 24rpx;
+  --font-size-base: 28rpx;
+  --font-size-md: 30rpx;
+  --font-size-lg: 34rpx;
+  --font-size-xl: 38rpx;
+  --font-size-xxl: 48rpx;
+  --spacing-xs: 8rpx;
+  --spacing-sm: 12rpx;
+  --spacing-base: 20rpx;
+  --spacing-md: 26rpx;
+  --spacing-lg: 34rpx;
+  --spacing-xl: 44rpx;
+  --spacing-xxl: 64rpx;
+}

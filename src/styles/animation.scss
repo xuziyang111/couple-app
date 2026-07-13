@@ -1,0 +1,121 @@
+// 动画定义
+@import './variables.scss';
+
+// 心跳动画
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.1); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.05); }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+// 飘浮爱心
+@keyframes floatHeart {
+  0% { 
+    transform: translateY(0) scale(1); 
+    opacity: 1;
+  }
+  100% { 
+    transform: translateY(-200rpx) scale(0.5); 
+    opacity: 0;
+  }
+}
+
+.animate-float-heart {
+  animation: floatHeart 2s ease-out forwards;
+}
+
+// 淡入
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn $transition-normal ease-out;
+}
+
+// 从下滑入
+@keyframes slideUp {
+  from { 
+    transform: translateY(40rpx); 
+    opacity: 0;
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp $transition-normal ease-out;
+}
+
+// 弹性缩放
+@keyframes bounceIn {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.1); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.animate-bounce-in {
+  animation: bounceIn $transition-slow ease-out;
+}
+
+// 旋转
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+// 闪烁
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+// 树叶飘落（原木主题）
+@keyframes leafFall {
+  0% { 
+    transform: translateY(-20rpx) rotate(0deg); 
+    opacity: 0;
+  }
+  20% { opacity: 1; }
+  100% { 
+    transform: translateY(300rpx) rotate(360deg); 
+    opacity: 0;
+  }
+}
+
+.animate-leaf {
+  animation: leafFall 3s ease-in-out infinite;
+}
+
+// 页面转场
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateX(30rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.page-enter {
+  animation: pageEnter $transition-normal ease-out;
+}

@@ -1,0 +1,154 @@
+{
+  "pages": [
+    {
+      "path": "pages/home/index",
+      "style": {
+        "navigationBarTitleText": "我们",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/bind/index",
+      "style": {
+        "navigationBarTitleText": "情侣绑定",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/chat/index",
+      "style": {
+        "navigationBarTitleText": "悄悄话",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/diary/index",
+      "style": {
+        "navigationBarTitleText": "我们的日记",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/diary/detail",
+      "style": {
+        "navigationBarTitleText": "日记详情"
+      }
+    },
+    {
+      "path": "pages/diary/edit",
+      "style": {
+        "navigationBarTitleText": "写日记"
+      }
+    },
+    {
+      "path": "pages/album/index",
+      "style": {
+        "navigationBarTitleText": "甜蜜相册",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/checkin/index",
+      "style": {
+        "navigationBarTitleText": "打卡心愿",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/anniversary/index",
+      "style": {
+        "navigationBarTitleText": "纪念日",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/finance/index",
+      "style": {
+        "navigationBarTitleText": "小账本",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/finance/stats",
+      "style": {
+        "navigationBarTitleText": "月度统计"
+      }
+    },
+    {
+      "path": "pages/tools/index",
+      "style": {
+        "navigationBarTitleText": "趣味工具",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/tools/truth-dare",
+      "style": {
+        "navigationBarTitleText": "真心话大冒险"
+      }
+    },
+    {
+      "path": "pages/tools/quiz",
+      "style": {
+        "navigationBarTitleText": "默契问答"
+      }
+    },
+    {
+      "path": "pages/tools/love-letter",
+      "style": {
+        "navigationBarTitleText": "情书模板"
+      }
+    },
+    {
+      "path": "pages/settings/index",
+      "style": {
+        "navigationBarTitleText": "设置",
+        "navigationStyle": "custom"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "情侣空间",
+    "navigationBarBackgroundColor": "#FF6B81",
+    "backgroundColor": "#FFF0F3"
+  },
+  "tabBar": {
+    "color": "#C0A0A8",
+    "selectedColor": "#FF6B81",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "static/icons/home.png",
+        "selectedIconPath": "static/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/chat/index",
+        "text": "聊天",
+        "iconPath": "static/icons/chat.png",
+        "selectedIconPath": "static/icons/chat-active.png"
+      },
+      {
+        "pagePath": "pages/diary/index",
+        "text": "日记",
+        "iconPath": "static/icons/diary.png",
+        "selectedIconPath": "static/icons/diary-active.png"
+      },
+      {
+        "pagePath": "pages/album/index",
+        "text": "相册",
+        "iconPath": "static/icons/album.png",
+        "selectedIconPath": "static/icons/album-active.png"
+      },
+      {
+        "pagePath": "pages/settings/index",
+        "text": "我的",
+        "iconPath": "static/icons/me.png",
+        "selectedIconPath": "static/icons/me-active.png"
+      }
+    ]
+  }
+}

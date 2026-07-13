@@ -1,0 +1,24 @@
+// 全局SCSS变量 - uni.scss 扩展
+// 这些变量可在所有scss文件中直接使用
+
+// 主题相关
+$theme-names: ('sweet', 'ins', 'cream', 'wood');
+$theme-labels: ('甜蜜可爱', '极简ins', '温柔奶油', '清新原木');
+
+// 通用布局
+$page-padding: 30rpx;
+$card-padding: 24rpx;
+$section-gap: 24rpx;
+
+// 动画时长
+$transition-fast: 0.2s;
+$transition-normal: 0.3s;
+$transition-slow: 0.5s;
+
+// z-index层级
+$z-base: 1;
+$z-header: 100;
+$z-tabbar: 200;
+$z-mask: 500;
+$z-popup: 600;
+$z-toast: 999;

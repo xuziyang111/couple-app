@@ -1,0 +1,52 @@
+// 极简ins文艺风 - INS Theme
+// 低饱和、留白、高级感、莫兰迪色
+@mixin ins-theme {
+  --color-primary: #8B7E74;
+  --color-primary-light: #A89B91;
+  --color-primary-dark: #6E6359;
+  --color-secondary: #C4B8AD;
+  --color-bg: #FAF8F5;
+  --color-bg-secondary: #F3EFE9;
+  --color-card: #FFFFFF;
+  --color-text: #3D3630;
+  --color-text-secondary: #7A7068;
+  --color-text-light: #B0A89F;
+  --color-text-placeholder: #D1CBC4;
+  --color-accent: #6E6359;
+  --color-success: #8FAE8B;
+  --color-warning: #D4B87A;
+  --color-error: #C97B7B;
+  --color-info: #7B9EC9;
+  --color-gradient-start: #8B7E74;
+  --color-gradient-end: #A89B91;
+  --color-border: #E8E2DB;
+  --color-divider: #F3EFE9;
+  --color-mask: rgba(61, 54, 48, 0.45);
+  --color-tabbar: #FFFFFF;
+  --color-tabbar-active: #8B7E74;
+  --color-tabbar-inactive: #B0A89F;
+  --shadow-card: 0 2rpx 12rpx rgba(61, 54, 48, 0.06);
+  --shadow-button: 0 2rpx 8rpx rgba(61, 54, 48, 0.1);
+  --shadow-float: 0 6rpx 20rpx rgba(61, 54, 48, 0.1);
+  --radius-card: 8rpx;
+  --radius-button: 8rpx;
+  --radius-input: 6rpx;
+  --radius-tag: 4rpx;
+  --radius-avatar: 50%;
+  --radius-image: 6rpx;
+  --font-family: 'Georgia', 'Noto Serif SC', serif;
+  --font-size-xs: 20rpx;
+  --font-size-sm: 24rpx;
+  --font-size-base: 28rpx;
+  --font-size-md: 30rpx;
+  --font-size-lg: 34rpx;
+  --font-size-xl: 38rpx;
+  --font-size-xxl: 48rpx;
+  --spacing-xs: 8rpx;
+  --spacing-sm: 16rpx;
+  --spacing-base: 24rpx;
+  --spacing-md: 32rpx;
+  --spacing-lg: 40rpx;
+  --spacing-xl: 56rpx;
+  --spacing-xxl: 80rpx;
+}

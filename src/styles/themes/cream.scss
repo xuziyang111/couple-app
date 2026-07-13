@@ -1,0 +1,52 @@
+// 温柔奶油治愈风 - Cream Theme
+// 暖黄奶油、柔软、包裹感
+@mixin cream-theme {
+  --color-primary: #D4A574;
+  --color-primary-light: #E0BE95;
+  --color-primary-dark: #C08B5C;
+  --color-secondary: #F0D9BE;
+  --color-bg: #FFF8EE;
+  --color-bg-secondary: #FFF0DE;
+  --color-card: #FFFFFF;
+  --color-text: #5C4832;
+  --color-text-secondary: #9B8570;
+  --color-text-light: #C8B8A5;
+  --color-text-placeholder: #DDD0C0;
+  --color-accent: #C08B5C;
+  --color-success: #9BC49B;
+  --color-warning: #F0C97A;
+  --color-error: #E88B7B;
+  --color-info: #7BB8D4;
+  --color-gradient-start: #D4A574;
+  --color-gradient-end: #E0BE95;
+  --color-border: #F0E0CC;
+  --color-divider: #FFF0DE;
+  --color-mask: rgba(92, 72, 50, 0.45);
+  --color-tabbar: #FFFFFF;
+  --color-tabbar-active: #D4A574;
+  --color-tabbar-inactive: #C8B8A5;
+  --shadow-card: 0 4rpx 16rpx rgba(212, 165, 116, 0.1);
+  --shadow-button: 0 4rpx 12rpx rgba(212, 165, 116, 0.25);
+  --shadow-float: 0 8rpx 28rpx rgba(212, 165, 116, 0.15);
+  --radius-card: 16rpx;
+  --radius-button: 32rpx;
+  --radius-input: 12rpx;
+  --radius-tag: 16rpx;
+  --radius-avatar: 50%;
+  --radius-image: 12rpx;
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-xs: 20rpx;
+  --font-size-sm: 24rpx;
+  --font-size-base: 28rpx;
+  --font-size-md: 30rpx;
+  --font-size-lg: 34rpx;
+  --font-size-xl: 40rpx;
+  --font-size-xxl: 50rpx;
+  --spacing-xs: 8rpx;
+  --spacing-sm: 12rpx;
+  --spacing-base: 20rpx;
+  --spacing-md: 28rpx;
+  --spacing-lg: 36rpx;
+  --spacing-xl: 48rpx;
+  --spacing-xxl: 68rpx;
+}

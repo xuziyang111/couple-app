@@ -1,0 +1,26 @@
+// 主题索引文件 - 导入所有主题mixin
+@import './sweet.scss';
+@import './ins.scss';
+@import './cream.scss';
+@import './wood.scss';
+
+// 主题配置映射
+$themes: (
+  'sweet': 'sweet-theme',
+  'ins': 'ins-theme',
+  'cream': 'cream-theme',
+  'wood': 'wood-theme'
+);
+
+// 主题应用mixin - 在:root上使用
+@mixin apply-theme($theme-name) {
+  @if $theme-name == 'sweet' {
+    @include sweet-theme;
+  } @else if $theme-name == 'ins' {
+    @include ins-theme;
+  } @else if $theme-name == 'cream' {
+    @include cream-theme;
+  } @else if $theme-name == 'wood' {
+    @include wood-theme;
+  }
+}

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>情侣APP图标生成器</title>
+<style>
+body { background: #f5f5f5; display: flex; flex-direction: column; align-items: center; padding: 40px; font-family: sans-serif; }
+h1 { color: #333; margin-bottom: 20px; }
+.icon-preview { margin: 20px; }
+canvas { border-radius: 22%; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+.info { color: #666; margin-top: 20px; text-align: center; line-height: 1.8; }
+.btn { background: linear-gradient(135deg, #FF6B81, #FF8FA2); color: #fff; border: none; padding: 12px 32px; border-radius: 25px; font-size: 16px; cursor: pointer; margin: 10px; }
+.btn:hover { opacity: 0.9; }
+</style>
+</head>
+<body>
+<h1>💕 情侣APP 图标预览</h1>
+<div class="icon-preview">
+<canvas id="icon" width="512" height="512"></canvas>
+</div>
+<button class="btn" onclick="downloadIcon()">下载 512x512 图标</button>
+<div class="info">
+<p>右键点击图标 → "另存为图片" 也可保存</p>
+<p>打包时需要 1024x1024 的图标文件</p>
+</div>
+
+<script>
+function drawIcon(canvas, size) {
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const s = size / 512; // 缩放因子
+
+  // 背景渐变
+  const bgGrad = ctx.createLinearGradient(0, 0, size, size);
+  bgGrad.addColorStop(0, '#FF6B81');
+  bgGrad.addColorStop(0.5, '#FF8FA2');
+  bgGrad.addColorStop(1, '#FFB6C1');
+  
+  // 圆角矩形背景
+  const r = 90 * s;
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(size - r, 0);
+  ctx.quadraticCurveTo(size, 0, size, r);
+  ctx.lineTo(size, size - r);
+  ctx.quadraticCurveTo(size, size, size - r, size);
+  ctx.lineTo(r, size);
+  ctx.quadraticCurveTo(0, size, 0, size - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.closePath();
+  ctx.fillStyle = bgGrad;
+  ctx.fill();
+
+  // 装饰小爱心（背景）
+  function drawHeart(cx, cy, heartSize, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    const hs = heartSize * s;
+    ctx.moveTo(cx, cy + hs * 0.3);
+    ctx.bezierCurveTo(cx, cy - hs * 0.2, cx - hs * 0.6, cy - hs * 0.4, cx - hs * 0.6, cy);
+    ctx.bezierCurveTo(cx - hs * 0.6, cy + hs * 0.3, cx, cy + hs * 0.6, cx, cy + hs * 0.8);
+    ctx.bezierCurveTo(cx, cy + hs * 0.6, cx + hs * 0.6, cy + hs * 0.3, cx + hs * 0.6, cy);
+    ctx.bezierCurveTo(cx + hs * 0.6, cy - hs * 0.4, cx, cy - hs * 0.2, cx, cy + hs * 0.3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // 背景装饰小爱心
+  drawHeart(100 * s, 100 * s, 40, 0.15);
+  drawHeart(400 * s, 80 * s, 30, 0.12);
+  drawHeart(420 * s, 380 * s, 35, 0.1);
+  drawHeart(80 * s, 400 * s, 25, 0.12);
+  drawHeart(250 * s, 60 * s, 20, 0.08);
+
+  // 中心大爱心
+  const cx = size / 2;
+  const cy = size / 2 - 10 * s;
+  const mainSize = 140 * s;
+  
+  // 爱心阴影
+  ctx.save();
+  ctx.shadowColor = 'rgba(200, 50, 80, 0.3)';
+  ctx.shadowBlur = 20 * s;
+  ctx.shadowOffsetY = 8 * s;
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.moveTo(cx, cy + mainSize * 0.3);
+  ctx.bezierCurveTo(cx, cy - mainSize * 0.2, cx - mainSize * 0.65, cy - mainSize * 0.45, cx - mainSize * 0.65, cy - mainSize * 0.05);
+  ctx.bezierCurveTo(cx - mainSize * 0.65, cy + mainSize * 0.3, cx, cy + mainSize * 0.55, cx, cy + mainSize * 0.85);
+  ctx.bezierCurveTo(cx, cy + mainSize * 0.55, cx + mainSize * 0.65, cy + mainSize * 0.3, cx + mainSize * 0.65, cy - mainSize * 0.05);
+  ctx.bezierCurveTo(cx + mainSize * 0.65, cy - mainSize * 0.45, cx, cy - mainSize * 0.2, cx, cy + mainSize * 0.3);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+
+  // 两个小人（简笔风格）
+  ctx.save();
+  ctx.strokeStyle = '#FF6B81';
+  ctx.lineWidth = 4 * s;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  // 左边小人 - 头
+  const lx = cx - 35 * s;
+  const ly = cy - 5 * s;
+  ctx.fillStyle = '#FF6B81';
+  ctx.beginPath();
+  ctx.arc(lx, ly, 14 * s, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 右边小人 - 头
+  const rx = cx + 35 * s;
+  const ry = cy - 5 * s;
+  ctx.beginPath();
+  ctx.arc(rx, ry, 14 * s, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 左小人身体
+  ctx.beginPath();
+  ctx.moveTo(lx, ly + 14 * s);
+  ctx.lineTo(lx, ly + 42 * s);
+  ctx.stroke();
+  // 左手臂（向右边伸出）
+  ctx.beginPath();
+  ctx.moveTo(lx, ly + 24 * s);
+  ctx.lineTo(lx + 20 * s, ly + 30 * s);
+  ctx.stroke();
+  // 左腿
+  ctx.beginPath();
+  ctx.moveTo(lx, ly + 42 * s);
+  ctx.lineTo(lx - 10 * s, ly + 58 * s);
+  ctx.moveTo(lx, ly + 42 * s);
+  ctx.lineTo(lx + 10 * s, ly + 58 * s);
+  ctx.stroke();
+
+  // 右小人身体
+  ctx.beginPath();
+  ctx.moveTo(rx, ry + 14 * s);
+  ctx.lineTo(rx, ry + 42 * s);
+  ctx.stroke();
+  // 右手臂（向左边伸出，牵手）
+  ctx.beginPath();
+  ctx.moveTo(rx, ry + 24 * s);
+  ctx.lineTo(rx - 20 * s, ry + 30 * s);
+  ctx.stroke();
+  // 右腿
+  ctx.beginPath();
+  ctx.moveTo(rx, ry + 42 * s);
+  ctx.lineTo(rx - 10 * s, ry + 58 * s);
+  ctx.moveTo(rx, ry + 42 * s);
+  ctx.lineTo(rx + 10 * s, ry + 58 * s);
+  ctx.stroke();
+
+  // 牵手连线
+  ctx.beginPath();
+  ctx.moveTo(lx + 20 * s, ly + 30 * s);
+  ctx.lineTo(rx - 20 * s, ry + 30 * s);
+  ctx.stroke();
+
+  ctx.restore();
+
+  // 底部文字 "搭搭"
+  ctx.save();
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.font = `bold ${42 * s}px -apple-system, "PingFang SC", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('搭搭', cx, size - 55 * s);
+  ctx.restore();
+}
+
+// 绘制预览
+const canvas = document.getElementById('icon');
+drawIcon(canvas, 512);
+
+// 下载功能
+function downloadIcon() {
+  const dlCanvas = document.createElement('canvas');
+  drawIcon(dlCanvas, 1024);
+  const link = document.createElement('a');
+  link.download = 'app-icon-1024.png';
+  link.href = dlCanvas.toDataURL('image/png');
+  link.click();
+}
+</script>
+</body>
+</html>

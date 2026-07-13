@@ -1,0 +1,52 @@
+// 甜蜜可爱风 - Sweet Theme
+// 粉色系、圆润、甜美
+@mixin sweet-theme {
+  --color-primary: #FF6B81;
+  --color-primary-light: #FF8FA2;
+  --color-primary-dark: #FF4D6D;
+  --color-secondary: #FFB6C1;
+  --color-bg: #FFF0F3;
+  --color-bg-secondary: #FFE4E9;
+  --color-card: #FFFFFF;
+  --color-text: #4A3035;
+  --color-text-secondary: #8B6B72;
+  --color-text-light: #C0A0A8;
+  --color-text-placeholder: #D4B8BF;
+  --color-accent: #FF4D6D;
+  --color-success: #7DD3A8;
+  --color-warning: #FFD166;
+  --color-error: #FF6B6B;
+  --color-info: #74B9FF;
+  --color-gradient-start: #FF6B81;
+  --color-gradient-end: #FF8FA2;
+  --color-border: #FFE0E6;
+  --color-divider: #FFF0F3;
+  --color-mask: rgba(74, 48, 53, 0.5);
+  --color-tabbar: #FFFFFF;
+  --color-tabbar-active: #FF6B81;
+  --color-tabbar-inactive: #C0A0A8;
+  --shadow-card: 0 4rpx 20rpx rgba(255, 107, 129, 0.12);
+  --shadow-button: 0 4rpx 12rpx rgba(255, 107, 129, 0.3);
+  --shadow-float: 0 8rpx 30rpx rgba(255, 107, 129, 0.18);
+  --radius-card: 24rpx;
+  --radius-button: 40rpx;
+  --radius-input: 16rpx;
+  --radius-tag: 20rpx;
+  --radius-avatar: 50%;
+  --radius-image: 16rpx;
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-xs: 20rpx;
+  --font-size-sm: 24rpx;
+  --font-size-base: 28rpx;
+  --font-size-md: 30rpx;
+  --font-size-lg: 34rpx;
+  --font-size-xl: 40rpx;
+  --font-size-xxl: 52rpx;
+  --spacing-xs: 8rpx;
+  --spacing-sm: 12rpx;
+  --spacing-base: 20rpx;
+  --spacing-md: 24rpx;
+  --spacing-lg: 32rpx;
+  --spacing-xl: 40rpx;
+  --spacing-xxl: 60rpx;
+}

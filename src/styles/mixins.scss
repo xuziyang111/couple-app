@@ -1,0 +1,88 @@
+// 通用Mixin
+
+// 卡片样式
+@mixin sweet-card {
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: $card-padding;
+}
+
+// 渐变按钮
+@mixin gradient-button {
+  background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end));
+  color: #fff;
+  border-radius: var(--radius-button);
+  box-shadow: var(--shadow-button);
+  border: none;
+  font-weight: 500;
+}
+
+// 文字截断
+@mixin text-ellipsis($lines: 1) {
+  @if $lines == 1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  } @else {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $lines;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// Flex居中
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Flex纵向
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// 安全区域底部
+@mixin safe-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+// 头像样式
+@mixin avatar($size: 80rpx) {
+  width: $size;
+  height: $size;
+  border-radius: var(--radius-avatar);
+  object-fit: cover;
+}
+
+// 标签样式
+@mixin tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-tag);
+  font-size: var(--font-size-sm);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+}
+
+// 渐变文字
+@mixin gradient-text {
+  background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// 页面容器
+@mixin page-container {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding: $page-padding;
+  box-sizing: border-box;
+}
