@@ -67,11 +67,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useCoupleStore } from '../../stores/couple'
 import { useChatStore } from '../../stores/chat'
 import { useVoiceRecorder } from '../../composables/useVoiceRecorder'
 import { useImageCompress } from '../../composables/useImageCompress'
+import { useCloudSync } from '../../composables/useCloudSync'
 import { emojis } from '../../data/emojis'
 import { generateId } from '../../utils/id'
 import { formatDateTime } from '../../utils/date'
@@ -79,6 +80,7 @@ import { createRecord, getAllRecords } from '../../db'
 
 const coupleStore = useCoupleStore()
 const chatStore = useChatStore()
+const cloudSync = useCloudSync()
 const { isRecording, startRecord, stopRecord, cancelRecord, playVoice, currentRecordPath, duration } = useVoiceRecorder()
 const { compressImage } = useImageCompress()
 
@@ -117,10 +119,17 @@ const sendText = () => {
     content: inputText.value.trim(),
     timestamp: Date.now(),
     isFavorite: false,
-    isRead: false
+    isRead: false,
+    coupleId: coupleStore.coupleInfo?.id || null
   }
   chatStore.addMessage(msg)
   createRecord('messages', msg)
+  
+  // 推送到云端（触发实时同步）
+  if (cloudSync.isOnline && cloudSync.coupleId) {
+    cloudSync.pushData('messages', msg)
+  }
+  
   inputText.value = ''
   scrollToBottom()
 }
@@ -144,10 +153,17 @@ const chooseImage = async () => {
       content: compressed,
       timestamp: Date.now(),
       isFavorite: false,
-      isRead: false
+      isRead: false,
+      coupleId: coupleStore.coupleInfo?.id || null
     }
     chatStore.addMessage(msg)
     createRecord('messages', msg)
+    
+    // 推送到云端（触发实时同步）
+    if (cloudSync.isOnline && cloudSync.coupleId) {
+      cloudSync.pushData('messages', msg)
+    }
+    
     scrollToBottom()
   } catch (e) {
     console.log('选择图片取消')
@@ -183,16 +199,44 @@ const loadMore = async () => {
   console.log('[Chat] 加载更多消息')
 }
 
+// 处理收到的实时消息
+const handleIncomingMessage = (record, event) => {
+  if (event === 'delete' || record._deleted) {
+    // 删除消息
+    chatStore.messages = chatStore.messages.filter(m => m.id !== record.id)
+    return
+  }
+  
+  // 检查是否是自己发送的消息（避免重复显示）
+  const exists = chatStore.messages.some(m => m.id === record.id)
+  if (!exists) {
+    chatStore.addMessage(record)
+    scrollToBottom()
+  }
+}
+
 onMounted(async () => {
   const sysInfo = uni.getSystemInfoSync()
   statusBarHeight.value = sysInfo.statusBarHeight || 44
   
-  // 加载消息
+  // 加载本地消息
   const messages = await getAllRecords('messages')
   messages.sort((a, b) => a.timestamp - b.timestamp)
   chatStore.setMessages(messages)
   chatStore.clearUnread()
   scrollToBottom()
+  
+  // 注册实时消息回调
+  if (cloudSync.isOnline && cloudSync.coupleId) {
+    cloudSync.registerCallback('messages', handleIncomingMessage)
+    console.log('[Chat] 已注册实时消息监听')
+  }
+})
+
+onUnmounted(() => {
+  // 取消注册
+  cloudSync.unregisterCallback('messages')
+  console.log('[Chat] 已取消实时消息监听')
 })
 </script>
 
