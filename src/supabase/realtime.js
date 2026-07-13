@@ -173,7 +173,11 @@ export const pullOnce = async (coupleId, callbacks = {}) => {
 function _parseRecord(row) {
   try {
     if (row.data) {
-      return JSON.parse(row.data)
+      // JSONB 列可能返回对象或字符串，兼容两种情况
+      if (typeof row.data === 'string') {
+        return JSON.parse(row.data)
+      }
+      return row.data
     }
   } catch (e) {
     console.error('[Realtime] 解析记录失败:', e)

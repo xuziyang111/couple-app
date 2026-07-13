@@ -46,10 +46,24 @@ export function useCloudSync() {
       console.log('[CloudSync] Supabase SDK 已初始化')
       
       // 2. 登录
-      const user = await auth.login()
-      if (!user) {
-        console.error('[CloudSync] 登录失败')
+      let user
+      try {
+        user = await auth.login()
+      } catch (loginErr) {
+        console.error('[CloudSync] 登录异常:', loginErr.message || loginErr)
+        // 如果是匿名登录失败，很可能是 Supabase 未开启匿名登录
+        if (loginErr.message && (loginErr.message.includes('anonymous') || loginErr.message.includes('Anonymous'))) {
+          console.error('[CloudSync] ❗ 请在 Supabase 控制台 → Authentication → Providers 中开启 Anonymous 登录')
+        }
         syncStatus.value = 'error'
+        isOnline.value = false
+        return false
+      }
+      
+      if (!user) {
+        console.error('[CloudSync] 登录返回空用户')
+        syncStatus.value = 'error'
+        isOnline.value = false
         return false
       }
       console.log('[CloudSync] 用户登录成功:', user.id)
@@ -63,22 +77,31 @@ export function useCloudSync() {
       if (savedCoupleId) {
         coupleId.value = savedCoupleId
         console.log('[CloudSync] 启动 Realtime 监听...')
-        await _startRealtimeListening(savedCoupleId)
-        console.log('[CloudSync] ✅ Realtime 监听已启动')
+        try {
+          await _startRealtimeListening(savedCoupleId)
+          console.log('[CloudSync] ✅ Realtime 监听已启动')
+        } catch (rtErr) {
+          console.error('[CloudSync] Realtime 启动失败:', rtErr.message || rtErr)
+        }
       } else {
         console.warn('[CloudSync] ⚠️ 未找到 coupleId，等待绑定后激活')
       }
 
       // 4. 处理离线时的待同步队列
-      await sync.processSyncQueue()
-      pendingCount.value = sync.getSyncStatus().queueLength
+      try {
+        await sync.processSyncQueue()
+        pendingCount.value = sync.getSyncStatus().queueLength
+      } catch (qErr) {
+        console.warn('[CloudSync] 处理同步队列失败:', qErr)
+      }
 
-      syncStatus.value = 'connected'
-      console.log('[CloudSync] 初始化完成, status:', syncStatus.value)
+      syncStatus.value = savedCoupleId ? 'connected' : 'idle'
+      console.log('[CloudSync] 初始化完成, status:', syncStatus.value, ', isOnline:', isOnline.value, ', coupleId:', coupleId.value)
       return true
     } catch (e) {
-      console.error('[CloudSync] ❌ 初始化失败:', e)
+      console.error('[CloudSync] ❌ 初始化失败:', e.message || e)
       syncStatus.value = 'error'
+      isOnline.value = false
       return false
     }
   }

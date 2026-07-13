@@ -240,7 +240,11 @@ export const getSyncStatus = () => ({
 function _cloudToLocal(cloudObj) {
   try {
     if (cloudObj.data) {
-      return JSON.parse(cloudObj.data)
+      // JSONB 列可能返回对象或字符串，兼容两种情况
+      if (typeof cloudObj.data === 'string') {
+        return JSON.parse(cloudObj.data)
+      }
+      return cloudObj.data
     }
   } catch (e) {
     console.error('[Sync] 解析云端数据失败:', e)
