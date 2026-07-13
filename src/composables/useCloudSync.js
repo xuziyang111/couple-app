@@ -38,26 +38,35 @@ export function useCloudSync() {
     }
 
     try {
+      console.log('[CloudSync] 开始初始化...')
       syncStatus.value = 'connecting'
       
       // 1. 初始化 SDK
       initSupabase()
+      console.log('[CloudSync] Supabase SDK 已初始化')
       
       // 2. 登录
       const user = await auth.login()
       if (!user) {
+        console.error('[CloudSync] 登录失败')
         syncStatus.value = 'error'
         return false
       }
+      console.log('[CloudSync] 用户登录成功:', user.id)
 
       isOnline.value = true
-      console.log('[CloudSync] 云端连接成功')
+      console.log('[CloudSync] ✅ 云端连接成功')
 
       // 3. 检查是否已有情侣绑定
       const savedCoupleId = uni.getStorageSync('couple_id_cloud')
+      console.log('[CloudSync] 保存的 coupleId:', savedCoupleId)
       if (savedCoupleId) {
         coupleId.value = savedCoupleId
+        console.log('[CloudSync] 启动 Realtime 监听...')
         await _startRealtimeListening(savedCoupleId)
+        console.log('[CloudSync] ✅ Realtime 监听已启动')
+      } else {
+        console.warn('[CloudSync] ⚠️ 未找到 coupleId，等待绑定后激活')
       }
 
       // 4. 处理离线时的待同步队列
@@ -65,9 +74,10 @@ export function useCloudSync() {
       pendingCount.value = sync.getSyncStatus().queueLength
 
       syncStatus.value = 'connected'
+      console.log('[CloudSync] 初始化完成, status:', syncStatus.value)
       return true
     } catch (e) {
-      console.error('[CloudSync] 初始化失败:', e)
+      console.error('[CloudSync] ❌ 初始化失败:', e)
       syncStatus.value = 'error'
       return false
     }
@@ -78,17 +88,23 @@ export function useCloudSync() {
    * 在配对成功后调用
    */
   const activateCoupleSync = async (newCoupleId) => {
+    console.log('[CloudSync] 激活情侣同步, coupleId:', newCoupleId)
     coupleId.value = newCoupleId
     uni.setStorageSync('couple_id_cloud', newCoupleId)
     
     // 执行首次全量同步
     syncStatus.value = 'syncing'
+    console.log('[CloudSync] 开始全量同步...')
     await sync.fullSync(newCoupleId, db)
     lastSyncTime.value = new Date().toISOString()
+    console.log('[CloudSync] ✅ 全量同步完成')
     
     // 启动实时监听
+    console.log('[CloudSync] 启动 Realtime 监听...')
     await _startRealtimeListening(newCoupleId)
+    console.log('[CloudSync] ✅ Realtime 监听已启动')
     syncStatus.value = 'connected'
+    console.log('[CloudSync] 情侣同步激活完成')
   }
 
   /**

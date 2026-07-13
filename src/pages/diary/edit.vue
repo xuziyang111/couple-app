@@ -87,33 +87,48 @@ const saveDraft = () => {
 }
 
 const publish = async () => {
-  console.log('[DiaryEdit] 发布日记, title:', title.value, ', length:', title.value?.length)
-  if (!title.value || !title.value.trim()) { 
+  console.log('[DiaryEdit] 发布日记, title:', JSON.stringify(title.value), ', type:', typeof title.value)
+  const trimmedTitle = title.value?.trim() || ''
+  console.log('[DiaryEdit] 修剪后标题:', JSON.stringify(trimmedTitle), ', length:', trimmedTitle.length)
+  
+  if (!trimmedTitle) { 
+    console.error('[DiaryEdit] 标题为空，拒绝提交')
     uni.showToast({ title: '请输入标题', icon: 'none' })
     return 
   }
-  const diary = {
-    id: generateId(),
-    title: title.value,
-    content: content.value,
-    mood: selectedMood.value,
-    imageIds: images.value,
-    tags: tags.value,
-    likes: 0,
-    liked: false,
-    comments: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+  
+  try {
+    const diary = {
+      id: generateId(),
+      title: trimmedTitle,
+      content: content.value,
+      mood: selectedMood.value,
+      imageIds: images.value,
+      tags: tags.value,
+      likes: 0,
+      liked: false,
+      comments: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+    
+    console.log('[DiaryEdit] 开始保存日记:', diary.id)
+    await createRecord('diaries', diary)
+    console.log('[DiaryEdit] 本地保存成功')
+    
+    diaryStore.addDiaryToList(diary)
+    diaryStore.clearDraft()
+    
+    // 推送到云端
+    cloudSync.pushData('diaries', diary)
+    console.log('[DiaryEdit] 已推送到云端')
+    
+    uni.showToast({ title: '发布成功', icon: 'success' })
+    setTimeout(() => uni.navigateBack(), 1500)
+  } catch (e) {
+    console.error('[DiaryEdit] 发布失败:', e)
+    uni.showToast({ title: '发布失败: ' + e.message, icon: 'none' })
   }
-  await createRecord('diaries', diary)
-  diaryStore.addDiaryToList(diary)
-  diaryStore.clearDraft()
-  
-  // 推送到云端
-  cloudSync.pushData('diaries', diary)
-  
-  uni.showToast({ title: '发布成功', icon: 'success' })
-  setTimeout(() => uni.navigateBack(), 1500)
 }
 
 onMounted(() => {

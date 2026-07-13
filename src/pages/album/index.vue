@@ -71,27 +71,47 @@ const chooseAndUploadPhoto = async () => {
     })
 
     if (!res.tempFilePaths || res.tempFilePaths.length === 0) {
+      console.log('[Album] 未选择图片')
       return
     }
 
-    uni.showLoading({ title: '上传中...' })
+    console.log('[Album] 选择了', res.tempFilePaths.length, '张图片')
+    uni.showLoading({ title: '处理中...' })
 
-    // 2. 批量上传
+    // 2. 批量处理
     for (let i = 0; i < res.tempFilePaths.length; i++) {
       const tempPath = res.tempFilePaths[i]
       
       // 生成唯一ID
       const photoId = Date.now() + '_' + Math.random().toString(36).substr(2, 9)
       
-      // 读取文件为base64（用于本地存储）
-      const base64 = await new Promise((resolve, reject) => {
-        uni.getFileSystemManager().readFile({
-          filePath: tempPath,
-          encoding: 'base64',
-          success: (res) => resolve('data:image/jpeg;base64,' + res.data),
-          fail: reject
+      // 读取文件为base64（H5 使用 FileReader）
+      let base64
+      try {
+        // #ifdef H5
+        const file = await fetch(tempPath).then(r => r.blob())
+        base64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onloadend = () => resolve(reader.result)
+          reader.onerror = reject
+          reader.readAsDataURL(file)
         })
-      })
+        // #endif
+        
+        // #ifndef H5
+        base64 = await new Promise((resolve, reject) => {
+          uni.getFileSystemManager().readFile({
+            filePath: tempPath,
+            encoding: 'base64',
+            success: (res) => resolve('data:image/jpeg;base64,' + res.data),
+            fail: reject
+          })
+        })
+        // #endif
+      } catch (e) {
+        console.error('[Album] 读取文件失败:', e)
+        throw e
+      }
 
       // 创建照片对象
       const photo = {
@@ -102,9 +122,11 @@ const chooseAndUploadPhoto = async () => {
         description: ''
       }
 
+      console.log('[Album] 保存照片到本地:', photoId)
       // 保存到数据库
       await createRecord('photos', photo)
       
+      console.log('[Album] 推送照片到云端')
       // 推送到云端
       cloudSync.pushData('photos', photo)
       
@@ -115,9 +137,9 @@ const chooseAndUploadPhoto = async () => {
     uni.hideLoading()
     uni.showToast({ title: `成功添加${res.tempFilePaths.length}张照片`, icon: 'success' })
   } catch (error) {
-    console.error('上传照片失败:', error)
+    console.error('[Album] 上传照片失败:', error)
     uni.hideLoading()
-    uni.showToast({ title: '上传失败', icon: 'none' })
+    uni.showToast({ title: '上传失败: ' + (error.message || '未知错误'), icon: 'none' })
   }
 }
 

@@ -229,6 +229,8 @@ onMounted(async () => {
   const sysInfo = uni.getSystemInfoSync()
   statusBarHeight.value = sysInfo.statusBarHeight || 44
   
+  console.log('[Chat] 页面挂载, cloudSync.isOnline:', cloudSync.isOnline, ', cloudSync.coupleId:', cloudSync.coupleId)
+  
   // 加载本地消息
   const messages = await getAllRecords('messages')
   messages.sort((a, b) => a.timestamp - b.timestamp)
@@ -239,7 +241,9 @@ onMounted(async () => {
   // 注册实时消息回调
   if (cloudSync.isOnline && cloudSync.coupleId) {
     cloudSync.registerCallback('messages', handleIncomingMessage)
-    console.log('[Chat] 已注册实时消息监听')
+    console.log('[Chat] ✅ 已注册实时消息监听')
+  } else {
+    console.warn('[Chat] ⚠️ 未注册实时监听 - isOnline:', cloudSync.isOnline, ', coupleId:', cloudSync.coupleId)
   }
 })
 
