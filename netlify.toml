@@ -1,6 +1,6 @@
 [build]
   publish = "dist/build/web"
-  command = "echo 'Built by HBuilderX - see dist/build/web'"
+  command = "echo 'Skip build - using HBuilderX output'"
 
 [[redirects]]
   from = "/*"
