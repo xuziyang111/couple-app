@@ -1,0 +1,1 @@
+function t(){return Date.now().toString(36)+Math.random().toString(36).substr(2,9)}function n(){return"C"+Date.now().toString(36)+Math.random().toString(36).substr(2,6).toUpperCase()}function r(){return"U"+Date.now().toString(36)+Math.random().toString(36).substr(2,8).toUpperCase()}export{n as generateCoupleId,t as generateId,r as generateUserId};

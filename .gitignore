@@ -1,8 +1,11 @@
 # Dependencies
 node_modules/
 
-# Build outputs
-dist/
+# Build outputs (keep dist/build/web for deployment)
+dist/*
+!dist/build/
+dist/build/*
+!dist/build/web/
 unpackage/
 
 # IDE
