@@ -1,7 +1,7 @@
 <template>
   <view class="edit-page">
     <view class="form-section">
-      <input class="title-input" v-model="title" placeholder="标题" maxlength="50" />
+      <input class="title-input" v-model="title" placeholder="标题" maxlength="50" @input="onTitleInput" />
       <textarea class="content-input" v-model="content" placeholder="记录你们的故事..." maxlength="2000" auto-height />
     </view>
     <view class="form-section">
@@ -64,6 +64,11 @@ const selectedMood = ref('happy')
 const images = ref([])
 const tags = ref([])
 const tagInput = ref('')
+
+// 监听标题输入变化
+const onTitleInput = (e) => {
+  console.log('[DiaryEdit] 标题输入事件:', e.detail.value, '当前 title.value:', title.value)
+}
 
 const chooseImage = async () => {
   try {
