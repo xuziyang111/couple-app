@@ -1,6 +1,6 @@
 [build]
-  publish = "unpackage/dist/build/h5"
-  command = "npm install && npm run build:h5"
+  publish = "dist/build/web"
+  command = "echo 'Built by HBuilderX - see dist/build/web'"
 
 [[redirects]]
   from = "/*"
