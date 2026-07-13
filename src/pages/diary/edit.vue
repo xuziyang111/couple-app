@@ -1,7 +1,7 @@
 <template>
   <view class="edit-page">
     <view class="form-section">
-      <input class="title-input" v-model="title" placeholder="标题" maxlength="50" @input="onTitleInput" />
+      <input class="title-input" v-model="title" placeholder="标题" maxlength="50" @blur="onTitleBlur" />
       <textarea class="content-input" v-model="content" placeholder="记录你们的故事..." maxlength="2000" auto-height />
     </view>
     <view class="form-section">
@@ -65,9 +65,9 @@ const images = ref([])
 const tags = ref([])
 const tagInput = ref('')
 
-// 监听标题输入变化
-const onTitleInput = (e) => {
-  console.log('[DiaryEdit] 标题输入事件:', e.detail.value, '当前 title.value:', title.value)
+// 监听标题失去焦点
+const onTitleBlur = () => {
+  console.log('[DiaryEdit] 标题失去焦点, title.value:', JSON.stringify(title.value), 'length:', title.value?.length || 0)
 }
 
 const chooseImage = async () => {
